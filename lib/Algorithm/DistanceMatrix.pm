@@ -44,11 +44,12 @@ provide a callback function for measuring the distance between any two objects.
 It produces a lower diagonal (by default) distance matrix that is fit to be used
 by the clustering algorithms of L<Algorithm::Cluster>.
 
+=head1 METHODS
+
 =cut
 
 package Algorithm::DistanceMatrix;
 use Moose;
-our $VERSION = '0.01_01';
 
 =head2 mode
 
@@ -116,19 +117,21 @@ sub distancematrix {
     my $n = @$objects;
     my $distances = [];
     for (my $i = 0; $i < $n; $i++) {
+        # This initialization is required to prevent 'undef' at [0,0], 
+        $distances->[$i] ||= [];
         # Diagonal or full matrix?
         my $start = $self->mode =~ /full/i ? 0 : $i+1;
         for (my $j = $start; $j < $n; $j++) {
             # Use a pointer, then determine if it's row-major or col-major order
-            my $ref = \$distances->[$i][$j];
             # Swap i and j if lower diagonal (default)
-            $ref = \$distances->[$j][$i] if $self->mode =~ /lower/i;     
+            my $ref = $self->mode =~ /lower/i ? 
+                \$distances->[$j][$i] : \$distances->[$i][$j];  
             # Callback function provides the distance
             $$ref = $metric->($objects->[$i], $objects->[$j]);
         }
     }
     # Last diagonal element is undef, unless explicitly computed
-    $distances->[$n-1][$n-1] = undef unless $self->mode =~ /full/i;
+    $distances->[$n-1] = [(undef)x$n] if $self->mode =~ /upper/i;
     return $distances;
 }
 
