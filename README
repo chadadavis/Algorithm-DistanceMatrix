@@ -1,0 +1,14 @@
+This is a small helper package for L<Algorithm::Cluster>. That module provides 
+many facilities for clustering data. It also provides a C<distancematrix> function,
+but assumes tabular data, which is the standard for gene expression data. 
+
+If your data is tabular, you should first have a look at C<distancematrix> in
+L<Algorithm::Cluster>
+
+ http://cpansearch.perl.org/src/MDEHOON/Algorithm-Cluster-1.48/doc/cluster.pdf
+ 
+Otherwise, this package provides a simple distance matrix, given an arbitrary 
+distance function. It does not assume anything about your data. You simply 
+provide a callback function for measuring the distance between any two objects.
+It produces a lower diagonal (by default) distance matrix that is fit to be used
+by the clustering algorithms of L<Algorithm::Cluster>.

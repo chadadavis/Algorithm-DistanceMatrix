@@ -6,7 +6,7 @@ Algorithm::DistanceMatrix - Compute distance matrix for any distance metric
 
 =head1 SYNOPSIS
 
-use Algorith::DistanceMatrix;
+use Algorithm::DistanceMatrix;
 my $m = Algorithm::DistanceMatrix->new(
     metric=>\&mydistance,objects=\@myarray);
 my $distmatrix =  $m->distancematrix;
@@ -24,11 +24,13 @@ my $tree = treecluster(data=>$distmat, method=>'a');
 
 # Get your objects and the cluster IDs they belong to, assuming 5 clusters
 my $cluster_ids = $tree->cut(5);
+# Index corresponds to that of the original objects
+print $objects->[2], ' belongs to cluster ', $cluster_ids->[2], "\n";
 
 =head1 DESCRIPTION
 
-This is a small helper package for L<Algorithm::Cluster>, which provides many 
-facilities for clustering data. It also provides a C<distancematrix> function,
+This is a small helper package for L<Algorithm::Cluster>. That module provides 
+many facilities for clustering data. It also provides a C<distancematrix> function,
 but assumes tabular data, which is the standard for gene expression data. 
 
 If your data is tabular, you should first have a look at C<distancematrix> in
@@ -45,8 +47,8 @@ by the clustering algorithms of L<Algorithm::Cluster>.
 =cut
 
 package Algorithm::DistanceMatrix;
-our $VERSION = '0.01_01';
 use Moose;
+our $VERSION = '0.01_01';
 
 =head2 mode
 
@@ -65,7 +67,7 @@ has 'mode' =>(
 
 Callback for computing the distance, similarity, or whatever measure you like.
 
- $matrix->metrix(\@mydistance);
+ $matrix->metric(\@mydistance);
 
 Where C<mydistance> receives two objects as it's first two arguments.
  
@@ -78,10 +80,13 @@ plan to use this with L<Algorithm::Cluster> this needs to be a distance metric.
 So, if you're measure how similar two things are, on a scale of 1-10, then you
 should return C<10-$similarity> to get a distance.
 
+Default is the absolute values of the scalar difference (i.e. C<abs(X-Y)>)
+
 =cut
 has 'metric' => (
     is=>'rw',
     isa=>'CodeRef',
+    default=>sub{abs($_[0]-$_[1])},
     );
 
 
@@ -105,20 +110,25 @@ has 'objects' => (
 =cut    
 sub distancematrix {
     my ($self, ) = @_;
-    my $measure = $self->measure;
+    # Callback function
+    my $metric = $self->metric;
     my $objects = $self->objects;
-    # Lower diagonal distance matrix
+    my $n = @$objects;
     my $distances = [];
-    for (my $i = 0; $i < @$objects; $i++) {
-        $distances->[$i] ||= [];
+    for (my $i = 0; $i < $n; $i++) {
+        # Diagonal or full matrix?
         my $start = $self->mode =~ /full/i ? 0 : $i+1;
-        for (my $j = $start; $j < @$objects; $j++) {
+        for (my $j = $start; $j < $n; $j++) {
+            # Use a pointer, then determine if it's row-major or col-major order
             my $ref = \$distances->[$i][$j];
             # Swap i and j if lower diagonal (default)
             $ref = \$distances->[$j][$i] if $self->mode =~ /lower/i;     
-            $$ref = $measure->($objects->[$i], $objects->[$j]);
+            # Callback function provides the distance
+            $$ref = $metric->($objects->[$i], $objects->[$j]);
         }
     }
+    # Last diagonal element is undef, unless explicitly computed
+    $distances->[$n-1][$n-1] = undef unless $self->mode =~ /full/i;
     return $distances;
 }
 
