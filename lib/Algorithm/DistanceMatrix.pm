@@ -6,27 +6,27 @@ Algorithm::DistanceMatrix - Compute distance matrix for any distance metric
 
 =head1 SYNOPSIS
 
-use Algorithm::DistanceMatrix;
-my $m = Algorithm::DistanceMatrix->new(
-    metric=>\&mydistance,objects=\@myarray);
-my $distmatrix =  $m->distancematrix;
-
-use Algorithm::Cluster qw/treecluster/;
-# method=>
-# s: single-linkage clustering
-# http://en.wikipedia.org/wiki/Single-linkage_clustering
-# m: maximum- (or complete-) linkage clustering
-# http://en.wikipedia.org/wiki/Complete_linkage_clustering
-# a: average-linkage clustering (UPGMA)
-# http://en.wikipedia.org/wiki/UPGMA
-
-my $tree = treecluster(data=>$distmat, method=>'a');
-
-# Get your objects and the cluster IDs they belong to, assuming 5 clusters
-my $cluster_ids = $tree->cut(5);
-# Index corresponds to that of the original objects
-print $objects->[2], ' belongs to cluster ', $cluster_ids->[2], "\n";
-
+ use Algorithm::DistanceMatrix;
+ my $m = Algorithm::DistanceMatrix->new(
+     metric=>\&mydistance,objects=\@myarray);
+ my $distmatrix =  $m->distancematrix;
+ 
+ use Algorithm::Cluster qw/treecluster/;
+ # method=>
+ # s: single-linkage clustering
+ # http://en.wikipedia.org/wiki/Single-linkage_clustering
+ # m: maximum- (or complete-) linkage clustering
+ # http://en.wikipedia.org/wiki/Complete_linkage_clustering
+ # a: average-linkage clustering (UPGMA)
+ # http://en.wikipedia.org/wiki/UPGMA
+ 
+ my $tree = treecluster(data=>$distmat, method=>'a');
+ 
+ # Get your objects and the cluster IDs they belong to, assuming 5 clusters
+ my $cluster_ids = $tree->cut(5);
+ # Index corresponds to that of the original objects
+ print $objects->[2], ' belongs to cluster ', $cluster_ids->[2], "\n";
+ 
 =head1 DESCRIPTION
 
 This is a small helper package for L<Algorithm::Cluster>. That module provides 
