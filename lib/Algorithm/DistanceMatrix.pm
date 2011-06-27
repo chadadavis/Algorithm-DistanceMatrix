@@ -44,11 +44,16 @@ provide a callback function for measuring the distance between any two objects.
 It produces a lower diagonal (by default) distance matrix that is fit to be used
 by the clustering algorithms of L<Algorithm::Cluster>.
 
+=head1 SOURCE
+
+ https://github.com/chadadavis/Algorithm-DistanceMatrix
+ 
 =head1 METHODS
 
 =cut
 
 package Algorithm::DistanceMatrix;
+use 5.008;
 use Moose;
 
 =head2 mode
