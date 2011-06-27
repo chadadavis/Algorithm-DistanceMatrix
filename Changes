@@ -9,4 +9,7 @@ Revision history for {{$dist->name}}
     * Removed duplicate package
 
 0.02      2011-05-28 02:05:08 Europe/Berlin
+    * Updated Documentation
+
+0.01      2011-05-27 21:13:15 Europe/Berlin
     * Initial release
